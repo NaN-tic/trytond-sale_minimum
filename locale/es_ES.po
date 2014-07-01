@@ -1,0 +1,19 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:product.template,minimum_quantity:"
+msgid "Minimum Quantity"
+msgstr "Cantidad mínima"
+
+msgctxt "field:sale.line,minimum_quantity:"
+msgid "Minimum Quantity"
+msgstr "Cantidad mínima"
+
+msgctxt "help:sale.line,minimum_quantity:"
+msgid "The quantity must be greater or equal than minimum quantity"
+msgstr "La cantidad debe ser superior o igual a la cantidad mínima"
+
+msgctxt "view:sale.line:"
+msgid "The quantity must be greater or equal than minimum quantity:"
+msgstr "La cantidad debe ser superior o igual a la cantidad mínima:"

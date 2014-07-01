@@ -11,15 +11,20 @@ __metaclass__ = PoolMeta
 class Template:
     __name__ = 'product.template'
 
-    minimum_quantity = fields.Float('Minimum Quantity')
+    minimum_quantity = fields.Float('Minimum Quantity',
+        digits=(16, Eval('sale_uom', 2)), states={
+            'readonly': ~Eval('active', True),
+            'invisible': ~Eval('salable', False),
+            }, depends=['active', 'salable', 'sale_uom'])
 
 
 class SaleLine:
     __name__ = 'sale.line'
 
-    minimum_quantity = fields.Float('Minimum Quantity', readonly=True, states={
+    minimum_quantity = fields.Float('Minimum Quantity', readonly=True,
+        digits=(16, Eval('unit_digits', 2)), states={
             'invisible': ~Bool(Eval('minimum_quantity')),
-            },
+            }, depends=['unit_digits'],
         help='The quantity must be greater or equal than minimum quantity')
 
     @fields.depends('minimum_quantity')
