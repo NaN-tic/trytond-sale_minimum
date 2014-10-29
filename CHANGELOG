@@ -1,1 +1,5 @@
+* Add domain to quantity to don't allow less than minimum quantity
+* Don't set minimum quantity when change product
+
+Version 3.2.0 - 2014-07-01
 * Initial release

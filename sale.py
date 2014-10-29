@@ -2,7 +2,7 @@
 # copyright notices and license terms.
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Bool, Eval
+from trytond.pyson import If, Bool, Eval
 
 __all__ = ['Template', 'SaleLine']
 __metaclass__ = PoolMeta
@@ -21,52 +21,29 @@ class Template:
 class SaleLine:
     __name__ = 'sale.line'
 
-    minimum_quantity = fields.Float('Minimum Quantity', readonly=True,
-        digits=(16, Eval('unit_digits', 2)), states={
-            'invisible': ~Bool(Eval('minimum_quantity')),
-            }, depends=['unit_digits'],
-        help='The quantity must be greater or equal than minimum quantity')
+    minimum_quantity = fields.Function(fields.Float('Minimum Quantity',
+            digits=(16, Eval('unit_digits', 2)),
+            states={
+                'invisible': ~Bool(Eval('minimum_quantity')),
+                },
+            depends=['unit_digits'], help='The quantity must be greater or '
+            'equal than minimum quantity'),
+        'on_change_with_minimum_quantity')
 
-    @fields.depends('minimum_quantity')
-    def on_change_product(self):
-        minimum_quantity = self._get_minimum_quantity()
-        if minimum_quantity and (not self.quantity or
-                self.quantity < minimum_quantity):
-            self.quantity = minimum_quantity
-        else:
-            minimum_quantity = None
+    @classmethod
+    def __setup__(cls):
+        super(SaleLine, cls).__setup__()
+        minimum_domain = If(Bool(Eval('minimum_quantity', 0)),
+                ('quantity', '>=', Eval('minimum_quantity', 0)),
+                ())
+        if not 'minimum_quantity' in cls.quantity.depends:
+            cls.quantity.domain.append(minimum_domain)
+            cls.quantity.depends.append('minimum_quantity')
 
-        res = super(SaleLine, self).on_change_product()
-        if minimum_quantity:
-            res['minimum_quantity'] = minimum_quantity
-            res['quantity'] = minimum_quantity
-        else:
-            res['minimum_quantity'] = None
-        return res
-
-    @fields.depends('minimum_quantity')
-    def on_change_quantity(self):
-        minimum_quantity = None
-        if self.quantity:
-            minimum_quantity = self._get_minimum_quantity()
-            if minimum_quantity and self.quantity < minimum_quantity:
-                self.quantity = minimum_quantity
-            else:
-                minimum_quantity = None
-
-        res = super(SaleLine, self).on_change_quantity()
-        if minimum_quantity:
-            res['minimum_quantity'] = minimum_quantity
-            res['quantity'] = minimum_quantity
-        else:
-            res['minimum_quantity'] = None
-        return res
-
-    @fields.depends('product', '_parent_sale.party', 'quantity', 'unit',
-        'minimum_quantity')
-    def _get_minimum_quantity(self):
+    @fields.depends('product', 'unit')
+    def on_change_with_minimum_quantity(self, name=None):
         Uom = Pool().get('product.uom')
-        if not self.product or not self.sale.party:
+        if not self.product:
             return
         minimum_quantity = self.product.minimum_quantity
         if minimum_quantity:
