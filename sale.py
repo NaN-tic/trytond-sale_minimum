@@ -4,7 +4,7 @@ from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import If, Bool, Eval
 
-__all__ = ['Template', 'SaleLine']
+__all__ = ['Template', 'SaleLine', 'Sale']
 __metaclass__ = PoolMeta
 
 
@@ -52,3 +52,29 @@ class SaleLine:
                 minimum_quantity = Uom.compute_qty(self.product.sale_uom,
                     minimum_quantity, self.unit)
         return minimum_quantity
+
+
+class Sale:
+    __name__ = 'sale.sale'
+
+    @classmethod
+    def __setup__(cls):
+        super(Sale, cls).__setup__()
+        cls._error_messages.update({
+                'invalid_amount': ('The total amount (%s) of the sale %s it '
+                'is not permitted, by the minimum amount (%s).'),
+                })
+
+    def check_minimum_amount(self):
+        Config = Pool().get('sale.configuration')
+        config = Config(1)
+        if self.total_amount < config.minimum_amount:
+            self.raise_user_error('invalid_amount', (self.total_amount,
+                    self.rec_name, config.minimum_amount))
+
+    @classmethod
+    def quote(cls, sales):
+        for sale in sales:
+            sale.check_minimum_amount()
+
+        super(Sale, cls).quote(sales)
