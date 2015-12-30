@@ -65,16 +65,16 @@ class Sale:
                 'is not permitted, by the minimum amount (%s).'),
                 })
 
-    def check_minimum_amount(self):
+    @classmethod
+    def check_minimum_amount(cls, sales):
         Config = Pool().get('sale.configuration')
         config = Config(1)
-        if self.total_amount < config.minimum_amount:
-            self.raise_user_error('invalid_amount', (self.total_amount,
-                    self.rec_name, config.minimum_amount))
+        for sale in sales:
+            if sale.total_amount < config.minimum_amount:
+                cls.raise_user_error('invalid_amount', (sale.total_amount,
+                        sale.rec_name, config.minimum_amount))
 
     @classmethod
     def quote(cls, sales):
-        for sale in sales:
-            sale.check_minimum_amount()
-
+        cls.check_minimum_amount(sales)
         super(Sale, cls).quote(sales)
