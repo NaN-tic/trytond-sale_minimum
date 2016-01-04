@@ -1,10 +1,22 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:sale.sale:"
+msgid ""
+"The total amount (%s) of the sale %s it is not permitted, by the minimum "
+"amount (%s)."
+msgstr ""
+"El total (%s) de la venta %s no está permitido según el mínimo total "
+"permitido configurado (%s)."
 
 msgctxt "field:product.template,minimum_quantity:"
 msgid "Minimum Quantity"
 msgstr "Cantidad mínima"
+
+msgctxt "field:sale.configuration,minimum_amount:"
+msgid "Minimal Amount Permited"
+msgstr "Mínimo total permitido"
 
 msgctxt "field:sale.line,minimum_quantity:"
 msgid "Minimum Quantity"

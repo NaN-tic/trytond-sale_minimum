@@ -1,6 +1,6 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
-from trytond.model import fields
+from trytond.model import fields, ModelView
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import If, Bool, Eval
 
@@ -66,7 +66,7 @@ class Sale:
                 })
 
     @classmethod
-    def check_minimum_amount(cls, sales):
+    def _check_minimum_amount(cls, sales):
         Config = Pool().get('sale.configuration')
         config = Config(1)
         for sale in sales:
@@ -75,6 +75,7 @@ class Sale:
                         sale.rec_name, config.minimum_amount))
 
     @classmethod
+    @ModelView.button
     def quote(cls, sales):
-        cls.check_minimum_amount(sales)
+        cls._check_minimum_amount(sales)
         super(Sale, cls).quote(sales)
