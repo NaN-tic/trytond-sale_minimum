@@ -2,7 +2,7 @@
 <!-- The COPYRIGHT file at the top level of this repository contains the full
      copyright notices and license terms. -->
 <data>
-    <xpath expr="/form/notebook/page[@id='customers']/field[@name='delivery_time']"
+    <xpath expr="/form/notebook/page[@id='customers']/field[@name='lead_time']"
             position="after">
         <label name="minimum_quantity"/>
         <field name="minimum_quantity"/>
