@@ -3,7 +3,7 @@
 from trytond.model import fields
 from trytond.pool import PoolMeta
 from trytond.config import config
-DIGITS = config.getint('digits', 'unit_price_digits', 4)
+DIGITS = (16, config.getint('product', 'price_decimal', default=4))
 
 __all__ = ['Configuration']
 __metaclass__ = PoolMeta
@@ -13,4 +13,4 @@ class Configuration:
     __name__ = 'sale.configuration'
 
     minimum_amount = fields.Property(fields.Numeric('Minimal Amount Permited',
-            digits=(16, DIGITS), required=True))
+            digits=DIGITS, required=True))
