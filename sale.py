@@ -5,10 +5,9 @@ from trytond.pool import Pool, PoolMeta
 from trytond.pyson import If, Bool, Eval
 
 __all__ = ['Template', 'SaleLine']
-__metaclass__ = PoolMeta
 
 
-class Template:
+class Template(metaclass=PoolMeta):
     __name__ = 'product.template'
 
     minimum_quantity = fields.Float('Minimum Quantity',
@@ -18,7 +17,7 @@ class Template:
             }, depends=['active', 'salable', 'sale_uom'])
 
 
-class SaleLine:
+class SaleLine(metaclass=PoolMeta):
     __name__ = 'sale.line'
 
     minimum_quantity = fields.Function(fields.Float('Minimum Quantity',
