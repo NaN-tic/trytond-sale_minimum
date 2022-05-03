@@ -34,7 +34,7 @@ class SaleLine(metaclass=PoolMeta):
                 ())
         if not 'minimum_quantity' in cls.quantity.depends:
             cls.quantity.domain.append(minimum_domain)
-            cls.quantity.depends.append('minimum_quantity')
+            cls.quantity.depends.add('minimum_quantity')
 
     @fields.depends('product', 'unit')
     def on_change_with_minimum_quantity(self, name=None):
