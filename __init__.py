@@ -7,4 +7,5 @@ def register():
     Pool.register(
         sale.SaleLine,
         sale.Template,
+        sale.Product,
         module='sale_minimum', type_='model')

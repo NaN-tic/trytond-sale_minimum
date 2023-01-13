@@ -17,6 +17,10 @@ class Template(metaclass=PoolMeta):
             }, depends=['active', 'salable', 'sale_uom'])
 
 
+class Product(metaclass=PoolMeta):
+    __name__ = 'product.product'
+
+
 class SaleLine(metaclass=PoolMeta):
     __name__ = 'sale.line'
 
