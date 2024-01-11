@@ -14,7 +14,7 @@ class Template(metaclass=PoolMeta):
         digits=(16, Eval('sale_uom', 2)), states={
             'readonly': ~Eval('active', True),
             'invisible': ~Eval('salable', False),
-            }, depends=['active', 'salable', 'sale_uom'])
+            })
 
 
 class Product(metaclass=PoolMeta):
