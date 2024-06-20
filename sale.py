@@ -3,8 +3,9 @@
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import If, Bool, Eval
-
-__all__ = ['Template', 'SaleLine']
+from trytond.transaction import Transaction
+from trytond.exceptions import UserError
+from trytond.i18n import gettext
 
 
 class Template(metaclass=PoolMeta):
@@ -21,6 +22,27 @@ class Product(metaclass=PoolMeta):
     __name__ = 'product.product'
 
 
+class Sale(metaclass=PoolMeta):
+    __name__ = 'sale.sale'
+
+    @classmethod
+    def quote(cls, sales):
+        for sale in sales:
+            sale.check_minimum_quantity()
+        return super().quote(sales)
+
+    def check_minimum_quantity(self):
+        for line in self.lines:
+            if line.type != 'line':
+                continue
+
+            if line.quantity < line.minimum_quantity:
+                raise UserError(gettext('sale_minimum.msg_minimum_quantity_error',
+                                        line=line.rec_name,
+                                        quantity=line.quantity,
+                                        min_quantity=line.minimum_quantity))
+
+
 class SaleLine(metaclass=PoolMeta):
     __name__ = 'sale.line'
 
@@ -33,18 +55,33 @@ class SaleLine(metaclass=PoolMeta):
     @classmethod
     def __setup__(cls):
         super(SaleLine, cls).__setup__()
-        minimum_domain = If(Bool(Eval('minimum_quantity', 0)),
+        minimum_domain = If(
+                (Eval('type') == 'line') & (Eval('sale_state') == 'draft') & Bool(Eval('minimum_quantity', 0)),
                 ('quantity', '>=', Eval('minimum_quantity', 0)),
                 ())
-        if not 'minimum_quantity' in cls.quantity.depends:
-            cls.quantity.domain.append(minimum_domain)
-            cls.quantity.depends.add('minimum_quantity')
+        cls.quantity.domain.append(minimum_domain)
+        for _field in ('type', 'sale_state', 'minimum_quantity'):
+            if not _field in cls.quantity.depends:
+                cls.quantity.depends.add(_field)
+
+    @classmethod
+    def copy(cls, lines, default=None):
+        if default is None:
+            default = {}
+        else:
+            default = default.copy()
+
+        with Transaction().set_context(skip_minimum_quantity=True):
+            return super(SaleLine, cls).copy(lines, default=default)
 
     @fields.depends('product', 'unit')
     def on_change_with_minimum_quantity(self, name=None):
         Uom = Pool().get('product.uom')
-        if not self.product:
+
+        skip_minimum_quantity = Transaction().context.get('skip_minimum_quantity')
+        if not self.product or skip_minimum_quantity:
             return
+
         minimum_quantity = self.product.minimum_quantity
         if minimum_quantity:
             uom_category = self.product.sale_uom.category

@@ -5,6 +5,7 @@ from . import sale
 
 def register():
     Pool.register(
+        sale.Sale,
         sale.SaleLine,
         sale.Template,
         sale.Product,

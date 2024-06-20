@@ -1,6 +1,10 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:product.product,minimum_quantity:"
+msgid "Minimum Quantity"
+msgstr "Cantidad mínima"
 
 msgctxt "field:product.template,minimum_quantity:"
 msgid "Minimum Quantity"
@@ -13,6 +17,14 @@ msgstr "Cantidad mínima"
 msgctxt "help:sale.line,minimum_quantity:"
 msgid "The quantity must be greater or equal than minimum quantity"
 msgstr "La cantidad debe ser superior o igual a la cantidad mínima"
+
+msgctxt "model:ir.message,text:msg_minimum_quantity_error"
+msgid ""
+"The minimum quantity for the line \"%(line)s\" is \"%(min_quantity)s\" but "
+"it currently has \"%(quantity)s\"."
+msgstr ""
+"La cantidad mínima de la linea \"%(line)s\" es \"%(min_quantity)s\" pero la "
+"cantidad actual es \"%(quantity)s\"."
 
 msgctxt "view:sale.line:"
 msgid "The quantity must be greater or equal than minimum quantity:"
