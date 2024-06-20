@@ -36,7 +36,8 @@ class Sale(metaclass=PoolMeta):
             if line.type != 'line':
                 continue
 
-            if line.quantity < line.minimum_quantity:
+            minimum_quantity = line.minimum_quantity
+            if minimum_quantity is not None and line.quantity < minimum_quantity:
                 raise UserError(gettext('sale_minimum.msg_minimum_quantity_error',
                                         line=line.rec_name,
                                         quantity=line.quantity,
