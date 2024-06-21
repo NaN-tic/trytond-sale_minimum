@@ -20,10 +20,10 @@ msgstr "La cantidad debe ser superior o igual a la cantidad mínima"
 
 msgctxt "model:ir.message,text:msg_minimum_quantity_error"
 msgid ""
-"The minimum quantity for the line \"%(line)s\" is \"%(min_quantity)s\" but "
+"The minimum quantity for the \"%(product)s\" is \"%(min_quantity)s\" but "
 "it currently has \"%(quantity)s\"."
 msgstr ""
-"La cantidad mínima de la linea \"%(line)s\" es \"%(min_quantity)s\" pero la "
+"La cantidad mínima de \"%(product)s\" es \"%(min_quantity)s\" pero la "
 "cantidad actual es \"%(quantity)s\"."
 
 msgctxt "view:sale.line:"

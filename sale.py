@@ -53,34 +53,11 @@ class SaleLine(metaclass=PoolMeta):
         }, help='The quantity must be greater or equal than minimum quantity'),
         'on_change_with_minimum_quantity')
 
-    @classmethod
-    def __setup__(cls):
-        super(SaleLine, cls).__setup__()
-        minimum_domain = If(
-                (Eval('type') == 'line') & (Eval('sale_state') == 'draft') & Bool(Eval('minimum_quantity', 0)),
-                ('quantity', '>=', Eval('minimum_quantity', 0)),
-                ())
-        cls.quantity.domain.append(minimum_domain)
-        for _field in ('type', 'sale_state', 'minimum_quantity'):
-            if not _field in cls.quantity.depends:
-                cls.quantity.depends.add(_field)
-
-    @classmethod
-    def copy(cls, lines, default=None):
-        if default is None:
-            default = {}
-        else:
-            default = default.copy()
-
-        with Transaction().set_context(skip_minimum_quantity=True):
-            return super(SaleLine, cls).copy(lines, default=default)
-
     @fields.depends('product', 'unit')
     def on_change_with_minimum_quantity(self, name=None):
         Uom = Pool().get('product.uom')
 
-        skip_minimum_quantity = Transaction().context.get('skip_minimum_quantity')
-        if not self.product or skip_minimum_quantity:
+        if not self.product:
             return
 
         minimum_quantity = self.product.minimum_quantity
@@ -90,3 +67,21 @@ class SaleLine(metaclass=PoolMeta):
                 minimum_quantity = Uom.compute_qty(self.product.sale_uom,
                     minimum_quantity, self.unit)
         return minimum_quantity
+
+    @fields.depends(methods=['_notify_minimum_quantity'])
+    def on_change_notify(self):
+        notifications = super().on_change_notify()
+        notifications.extend(self._notify_minimum_quantity())
+        return notifications
+
+    @fields.depends('type', 'product', 'quantity', 'minimum_quantity')
+    def _notify_minimum_quantity(self):
+        if self.type == 'line' and self.product:
+            qty = self.quantity
+            min_qty = self.minimum_quantity
+            if (qty is not None and min_qty is not None and (qty < min_qty)):
+                yield ('warning', gettext(
+                        'sale_minimum.msg_minimum_quantity_error',
+                        product=self.product.rec_name,
+                        quantity=qty,
+                        min_quantity=min_qty))
