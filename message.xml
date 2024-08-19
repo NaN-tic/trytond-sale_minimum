@@ -6,5 +6,8 @@ this repository contains the full copyright notices and license terms. -->
         <record model="ir.message" id="msg_minimum_quantity_error">
             <field name="text">The minimum quantity for the "%(product)s" is "%(min_quantity)s" but it currently has "%(quantity)s".</field>
         </record>
+        <record model="ir.message" id="msg_line_minimum_quantity_error">
+            <field name="text">The minimum quantity for product "%(product)s" is "%(min_quantity)s" but it currently has "%(quantity)s".</field>
+        </record>
     </data>
 </tryton>

@@ -38,10 +38,11 @@ class Sale(metaclass=PoolMeta):
 
             minimum_quantity = line.minimum_quantity
             if minimum_quantity is not None and line.quantity < minimum_quantity:
-                raise UserError(gettext('sale_minimum.msg_minimum_quantity_error',
-                                        line=line.rec_name,
-                                        quantity=line.quantity,
-                                        min_quantity=line.minimum_quantity))
+                raise UserError(gettext(
+                    'sale_minimum.msg_minimum_quantity_error',
+                    line=line.rec_name,
+                    quantity=line.quantity,
+                    min_quantity=line.minimum_quantity))
 
 
 class SaleLine(metaclass=PoolMeta):
@@ -81,7 +82,7 @@ class SaleLine(metaclass=PoolMeta):
             min_qty = self.minimum_quantity
             if (qty is not None and min_qty is not None and (qty < min_qty)):
                 yield ('warning', gettext(
-                        'sale_minimum.msg_minimum_quantity_error',
+                        'sale_minimum.msg_line_minimum_quantity_error',
                         product=self.product.rec_name,
                         quantity=qty,
                         min_quantity=min_qty))
